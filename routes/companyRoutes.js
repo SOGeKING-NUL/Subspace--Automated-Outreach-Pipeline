@@ -11,9 +11,13 @@ router.post('/search', async (req, res) => {
   }
 
   try {
-    const data = await searchLookalikeCompanies(domain, limit);
-    return res.status(200).json({ success: true, data });
+    const rawData = await searchLookalikeCompanies(domain, limit);
+    
+    const domains = (rawData.companies || []).map(c => c.company?.domain).filter(Boolean);
+    return res.status(200).json({ success: true, domains });
+
   } catch (error) {
+    
     const statusCode = error.response ? error.response.status : 500;
     const errorMessage = error.response && error.response.data 
       ? error.response.data 
