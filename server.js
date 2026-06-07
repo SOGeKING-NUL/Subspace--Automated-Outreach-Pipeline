@@ -2,6 +2,7 @@ import 'dotenv/config';
 import express from 'express';
 import companyRoutes from './routes/companyRoutes.js';
 import peopleRoutes from './routes/peopleRoutes.js';
+import mailRoutes from './routes/mailRoutes.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -14,6 +15,7 @@ app.get('/health', (req, res) => {
 
 app.use('/api/companies', companyRoutes);
 app.use('/api/people', peopleRoutes);
+app.use('/api/mails', mailRoutes);
 
 app.use((err, req, res, next) => {
   console.error('Unhandled Server Error:', err.stack);
