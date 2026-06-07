@@ -38,3 +38,34 @@ export async function searchDecisionMakers(websites, page = 1) {
     throw error;
   }
 }
+
+export async function enrichPersonByLinkedin(linkedinUrl) {
+  const apiKey = process.env.PROSPEO_API;
+  if (!apiKey) {
+    throw new Error('PROSPEO_API key is not configured in .env file.');
+  }
+
+  const headers = {
+    'Content-Type': 'application/json',
+    'X-KEY': apiKey
+  };
+
+  const payload = {
+    data: {
+      linkedin_url: linkedinUrl
+    }
+  };
+
+  try {
+    console.log(`Sending enrich-person request to Prospeo for LinkedIn URL: ${linkedinUrl}`);
+    const response = await axios.post(
+      'https://api.prospeo.io/enrich-person',
+      payload,
+      { headers }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Prospeo Enrich Person API Error:', error.response?.data || error.message);
+    throw error;
+  }
+}

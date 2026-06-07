@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { enrichPersonByLinkedin } from './prospeoService.js';
 
 let cachedToken = null;
 let tokenExpiry = null; // Token is typically good for some time, we can fetch per session or simple caching.
@@ -86,7 +87,24 @@ export async function enrichPeopleWithEmails(people) {
           enrichedPerson.email = matchedEmail.email;
         }
       } catch (err) {
-        console.error(`Skipping email enrichment for ${enrichedPerson.name} due to error.`, err);
+        console.error(`Eazyreach failed for ${enrichedPerson.name}, will attempt fallback:`, err.message);
+      }
+
+      // Fallback to Prospeo's enrich-person API if EazyReach failed/resolved nothing
+      if (!enrichedPerson.email) {
+        try {
+          console.log(`Fallback: Using Prospeo to enrich email for ${enrichedPerson.name}`);
+          const prospeoData = await enrichPersonByLinkedin(enrichedPerson.linkedin);
+          const email = prospeoData.person?.email;
+          if (email) {
+            console.log(`Fallback Success: Resolved email via Prospeo: ${email}`);
+            enrichedPerson.email = email;
+          } else {
+            console.log(`Fallback: Prospeo did not find any email for ${enrichedPerson.name}`);
+          }
+        } catch (prospeoErr) {
+          console.error(`Fallback to Prospeo failed for ${enrichedPerson.name}:`, prospeoErr.message);
+        }
       }
     }
     
