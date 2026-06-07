@@ -1,19 +1,6 @@
 import axios from 'axios';
 
-export async function sendOutreachEmail(person) {
-  const apiKey = process.env.BREVO_API_KEY || process.env.BREVO_API;
-  const senderEmail = process.env.BREVO_SENDER_EMAIL || 'outreach@subspace.money';
-  const senderName = process.env.BREVO_SENDER_NAME || 'Subspace Team';
-
-  if (!apiKey) {
-    throw new Error('Brevo API key (BREVO_API_KEY) is not configured in .env file.');
-  }
-
-  if (!person.email) {
-    throw new Error(`Cannot send email to ${person.name || 'contact'} because email is missing.`);
-  }
-
-  // Construct personalized subject and copy/pitch
+export function compileOutreachEmail(person, senderName = 'Subspace Team') {
   const subject = `Collaborating with ${person.company || 'your team'} on subscription orchestration`;
   
   const htmlContent = `
@@ -36,6 +23,27 @@ export async function sendOutreachEmail(person) {
       </body>
     </html>
   `;
+
+  return { subject, htmlContent };
+}
+
+export async function sendOutreachEmail(person, precompiledSubject = null, precompiledHtml = null) {
+  const apiKey = process.env.BREVO_API_KEY || process.env.BREVO_API;
+  const senderEmail = process.env.BREVO_SENDER_EMAIL || 'outreach@subspace.money';
+  const senderName = process.env.BREVO_SENDER_NAME || 'Subspace Team';
+
+  if (!apiKey) {
+    throw new Error('Brevo API key (BREVO_API_KEY) is not configured in .env file.');
+  }
+
+  if (!person.email) {
+    throw new Error(`Cannot send email to ${person.name || 'contact'} because email is missing.`);
+  }
+
+  // Use precompiled subject and body, or generate them
+  const { subject, htmlContent } = (precompiledSubject && precompiledHtml) 
+    ? { subject: precompiledSubject, htmlContent: precompiledHtml }
+    : compileOutreachEmail(person, senderName);
 
   const payload = {
     sender: {

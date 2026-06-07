@@ -1,5 +1,6 @@
 import express from 'express';
-import { sendOutreachEmail } from '../services/brevoService.js';
+import { sendOutreachEmail, compileOutreachEmail } from '../services/brevoService.js';
+import { promptUserInTerminal } from '../services/terminalReview.js';
 
 const router = express.Router();
 
@@ -11,8 +12,21 @@ router.post('/send', async (req, res) => {
   }
 
   const results = [];
+  let abortBatch = false;
 
-  for (const person of people) {
+  for (let i = 0; i < people.length; i++) {
+    const person = people[i];
+
+    if (abortBatch) {
+      results.push({
+        name: person.name || 'Unknown',
+        email: person.email || null,
+        status: 'skipped',
+        error: 'Batch aborted by user.'
+      });
+      continue;
+    }
+
     if (!person.email) {
       results.push({
         name: person.name || 'Unknown',
@@ -23,8 +37,39 @@ router.post('/send', async (req, res) => {
       continue;
     }
 
+    // Compile email content
+    const senderName = process.env.BREVO_SENDER_NAME || 'Subspace Team';
+    const { subject, htmlContent } = compileOutreachEmail(person, senderName);
+
     try {
-      const response = await sendOutreachEmail(person);
+      // Prompt user in the terminal
+      const action = await promptUserInTerminal(person, subject, htmlContent);
+
+      if (action === 'q') {
+        console.log('\n❌ Batch send aborted by user in terminal.');
+        abortBatch = true;
+        results.push({
+          name: person.name,
+          email: person.email,
+          status: 'skipped',
+          error: 'Batch aborted by user.'
+        });
+        continue;
+      }
+
+      if (action === 'k') {
+        console.log(`\n⏭️ Skipped email for: ${person.name} (${person.email})`);
+        results.push({
+          name: person.name,
+          email: person.email,
+          status: 'skipped',
+          error: 'Skipped by user in terminal.'
+        });
+        continue;
+      }
+
+      // Action is 's' (send)
+      const response = await sendOutreachEmail(person, subject, htmlContent);
       results.push({
         name: person.name,
         email: person.email,
