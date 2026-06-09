@@ -60,23 +60,10 @@ body {
 
 
     I'm writing to you today as someone deeply impressed by Shine.com's evolution under your leadership. While most portals stop at the job match, your focus on a candidate's "entire career growth" is a powerful differentiator. Witnessing the development of initiatives like Shine Learning confirms a genuine commitment to redefining how talent meets opportunity in India [shine.com].
-
-
-
-
     As a third-year B.Tech student, I'm particularly fascinated by the "advanced 2-way matching technology" that powers your platform. My coursework has ignited a passion for creating intelligent, user-centric systems, and I am eager to apply my understanding of algorithms and software development to a product that directly impacts millions of professional journeys. I believe my enthusiasm and fresh technical perspective could be a valuable asset to your team as you continue to innovate.
 
-
-
-
     I know your time is incredibly valuable. Would you be open to a brief 15-minute conversation to discuss how a proactive student could contribute to Shine.com's mission, perhaps through a future internship or project?
-
-
-
-
     My resume, which provides more detail on my technical background, can be accessed here: Utsav Jana - Resume.
-
-
 
   Thank you for your time and for building a platform that truly invests in people's futures.
 
