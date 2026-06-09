@@ -1,6 +1,5 @@
 import express from 'express';
-import { searchDecisionMakers } from '../services/prospeoService.js';
-import { enrichPeopleWithEmails } from '../services/eazyreachService.js';
+import { searchDecisionMakers, bulkEnrichPeople } from '../services/prospeoService.js';
 
 const router = express.Router();
 
@@ -18,7 +17,8 @@ router.post('/search', async (req, res) => {
       name: r.person?.full_name || `${r.person?.first_name || ''} ${r.person?.last_name || ''}`.trim(),
       designation: r.person?.current_job_title || null,
       company: r.company?.name || null,
-      linkedin: r.person?.linkedin_url || null
+      linkedin: r.person?.linkedin_url || null,
+      person_id: r.person?.person_id || null
     }));
 
     return res.status(200).json({ 
@@ -47,7 +47,7 @@ router.post('/enrich', async (req, res) => {
   }
 
   try {
-    const enrichedPeople = await enrichPeopleWithEmails(people);
+    const enrichedPeople = await bulkEnrichPeople(people);
     return res.status(200).json({ success: true, results: enrichedPeople });
   } catch (error) {
     const statusCode = error.response ? error.response.status : 500;

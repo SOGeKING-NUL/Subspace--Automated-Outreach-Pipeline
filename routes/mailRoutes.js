@@ -36,12 +36,12 @@ router.post('/send', async (req, res) => {
       });
       continue;
     }
-
-    // Compile email content
-    const senderName = process.env.BREVO_SENDER_NAME || 'Subspace Team';
-    const { subject, htmlContent } = compileOutreachEmail(person, senderName);
+    const senderName = process.env.BREVO_SENDER_NAME || 'A Student';
 
     try {
+      // Compile email content
+      const { subject, htmlContent } = await compileOutreachEmail(person, senderName);
+
       // Prompt user in the terminal
       const action = await promptUserInTerminal(person, subject, htmlContent);
 
