@@ -95,7 +95,6 @@ export async function bulkEnrichPeople(people) {
   };
 
   const results = [];
-  console.log(`Enriching ${people.length} people sequentially using individual enrich endpoint (to avoid Free Plan bulk limits)...`);
 
   for (let i = 0; i < people.length; i++) {
     const person = people[i];

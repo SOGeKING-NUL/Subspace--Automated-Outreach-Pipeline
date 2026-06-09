@@ -51,8 +51,7 @@ export async function runPipeline(domain, limit = 10) {
 
   // --- STAGE 3: Email Resolution (Prospeo Enrich) ---
   console.log('--- STAGE 3: Enriching profiles with work emails ---');
-  const targetPeople = people.slice(0, 5);
-  console.log(`Limiting enrichment to ${targetPeople.length} people for testing/credit savings.`);
+  const targetPeople = people.slice(0, limit);
 
   const enrichedPeople = await bulkEnrichPeople(targetPeople);
 

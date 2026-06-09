@@ -4,8 +4,7 @@ An end-to-end automated pipeline that discovers companies similar to a target do
 
 ## System Design
 
-<!-- Replace with your system design flowchart image -->
-![System Design](./assets/system-design.png)
+![System Design](./public/system_design.png)
 
 ## How It Works
 
@@ -18,10 +17,94 @@ The pipeline runs through **4 stages** sequentially:
 | **3. Email Enrichment** | Resolves verified work email addresses for each person | Prospeo |
 | **4. AI Email Generation** | Generates a personalized cold email using web search context, then prompts you to send/skip/quit | OpenRouter (Gemini 2.5 Pro + Web Search) → Brevo |
 
+## Terminal Logs
+
+```bash
+$ node server.js internshala.com 1
+
+🚀 Starting Automated Outreach Pipeline for seed domain: internshala.com
+--- STAGE 1: Finding lookalike companies ---
+Sending lookalike search request to Ocean.io for seed domain: internshala.com
+Found 1 lookalike domains: shine.com
+--- STAGE 2: Searching for decision-makers ---
+Sending search-person request to Prospeo for websites: ["shine.com"]
+Found 2 decision-makers.
+--- STAGE 3: Enriching profiles with work emails ---
+[1/1] Enriching Akhil Gupta...
+--- STAGE 4: Launching interactive email review ---
+
+==================================================
+📧 EMAIL OUTREACH PREVIEW
+Recipient : Akhil Gupta (akhil.gupta@hindustantimes.com)
+Company   : Shine.com
+Designation: Chief Executive Officer
+Subject   : Beyond the Job Search: A student's perspective on Shine's mission
+--------------------------------------------------
+body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      color: #333333;
+    }
+    a {
+      color: #0073b1;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+
+
+
+  Dear Mr. Gupta,
+
+
+
+    I'm writing to you today as someone deeply impressed by Shine.com's evolution under your leadership. While most portals stop at the job match, your focus on a candidate's "entire career growth" is a powerful differentiator. Witnessing the development of initiatives like Shine Learning confirms a genuine commitment to redefining how talent meets opportunity in India [shine.com].
+
+
+
+
+    As a third-year B.Tech student, I'm particularly fascinated by the "advanced 2-way matching technology" that powers your platform. My coursework has ignited a passion for creating intelligent, user-centric systems, and I am eager to apply my understanding of algorithms and software development to a product that directly impacts millions of professional journeys. I believe my enthusiasm and fresh technical perspective could be a valuable asset to your team as you continue to innovate.
+
+
+
+
+    I know your time is incredibly valuable. Would you be open to a brief 15-minute conversation to discuss how a proactive student could contribute to Shine.com's mission, perhaps through a future internship or project?
+
+
+
+
+    My resume, which provides more detail on my technical background, can be accessed here: Utsav Jana - Resume.
+
+
+
+  Thank you for your time and for building a platform that truly invests in people's futures.
+
+
+  Sincerely,
+
+
+
+    Utsav Jana
+
+    3rd Year B.Tech Student
+==================================================
+Action: [s]end / [k]eep/skip / [q]uit batch: s
+Sending transactional email via Brevo to: akhil.gupta@hindustantimes.com (Akhil Gupta)
+
+🎉 Pipeline completed. Sent: 1, Failed: 0, Skipped: 0
+
+📊 Final Results: {
+  "total": 1,
+  "sent": 1,
+  "failed": 0,
+  "skipped": 0
+}
+```
+
 ## Email Preview
 
-<!-- Replace with a screenshot of the email preview in terminal or the sent email -->
-![Email Preview](./assets/email-preview.png)
+![Email Preview](./public/email_proof.png)
 
 ## Setup
 
@@ -91,56 +174,6 @@ Then trigger the pipeline via HTTP:
 curl -X POST http://localhost:3000/api/pipeline/run \
   -H "Content-Type: application/json" \
   -d '{"domain": "docker.com", "limit": 5}'
-```
-
-## Terminal Logs
-
-```bash
-$ node server.js pandadoc.com
-
-🚀 Starting Automated Outreach Pipeline for seed domain: pandadoc.com
---- STAGE 1: Finding lookalike companies ---
-Sending lookalike search request to Ocean.io for seed domain: pandadoc.com
-Found 5 lookalike domains: ospyn.com, docuvity.com, crove.app, xfilespro.com, cloudfiles.io
---- STAGE 2: Searching for decision-makers ---
-Sending search-person request to Prospeo for websites: ["ospyn.com","docuvity.com","crove.app","xfilespro.com","cloudfiles.io"]
-Found 23 decision-makers.
---- STAGE 3: Enriching profiles with work emails ---
-Limiting enrichment to 5 people for testing/credit savings.
-Enriching 5 people sequentially using individual enrich endpoint...
-[1/5] Enriching Rakesh Rao...
-[2/5] Enriching Prasadu Varghese...
-[3/5] Enriching Kishore Kumar...
-[4/5] Enriching Vishesh Singhal...
-[5/5] Enriching Seema Richard...
---- STAGE 4: Launching interactive email review ---
-
-==================================================
-📧 EMAIL OUTREACH PREVIEW
-Recipient : Akhil Gupta (akhil.gupta@shine.com)
-Company   : Shine.com
-Designation: Chief Executive Officer
-Subject   : Beyond Job Listings: A Fresh Perspective on Shine.com's Mission
---------------------------------------------------
-Dear Mr. Gupta,
-
-I'm writing to you today not just as a student looking for a job,
-but as someone genuinely impressed by the strategic evolution of
-Shine.com under your leadership...
-==================================================
-Action: [s]end / [k]eep/skip / [q]uit batch: s
-
-Sending transactional email via Brevo to: akhil.gupta@shine.com
-✅ Email sent successfully!
-
-🎉 Pipeline completed. Sent: 1, Failed: 0, Skipped: 4
-
-📊 Final Results: {
-  "total": 5,
-  "sent": 1,
-  "failed": 0,
-  "skipped": 4
-}
 ```
 
 ## Project Structure

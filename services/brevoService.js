@@ -65,6 +65,20 @@ export async function compileOutreachEmail(person, senderName = 'Utsav Jana') {
   }
 }
 
+async function postWithRetry(url, payload, config = {}, retries = 3, delayMs = 2000) {
+  try {
+    return await axios.post(url, payload, config);
+  } catch (error) {
+    const isRetryable = error.response && (error.response.status >= 500 || error.response.status === 429);
+    if (retries > 0 && isRetryable) {
+      console.warn(`⚠️ Brevo API error (${error.response.status}) encountered. Retrying in ${delayMs}ms... (${retries} retries left)`);
+      await new Promise(resolve => setTimeout(resolve, delayMs));
+      return postWithRetry(url, payload, config, retries - 1, delayMs * 2); // Exponential backoff
+    }
+    throw error;
+  }
+}
+
 export async function sendOutreachEmail(person, precompiledSubject = null, precompiledHtml = null) {
   const apiKey = process.env.BREVO_API_KEY || process.env.BREVO_API;
   const senderEmail = process.env.BREVO_SENDER_EMAIL;
@@ -100,7 +114,7 @@ export async function sendOutreachEmail(person, precompiledSubject = null, preco
 
   try {
     console.log(`Sending transactional email via Brevo to: ${person.email} (${person.name || ''})`);
-    const response = await axios.post(
+    const response = await postWithRetry(
       'https://api.brevo.com/v3/smtp/email',
       payload,
       {
