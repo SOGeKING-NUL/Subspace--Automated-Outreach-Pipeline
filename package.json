@@ -1,11 +1,12 @@
 {
   "name": "subspace--automated-outreach-pipeline",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Automated cold outreach pipeline — finds lookalike companies, discovers decision-makers, generates AI-personalized emails, and sends them via Brevo.",
+  "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
+    "pipeline": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
